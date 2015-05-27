@@ -11,3 +11,8 @@ how to run
 3. `open application.html`
 
 Then click on the `+ member` button, but nothing happens. What I want is to show the popup form.
+
+Update
+------
+
+See the latest code, the problem is fixed.

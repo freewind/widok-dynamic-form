@@ -13,16 +13,17 @@ object Main extends PageApplication {
 
   def view() = span(
     h1("All teams"),
-    teams.map(_.map(team => div(
+    teams.map(_.map { team =>
+      val showForm = Var(false)
       div(
-        team.name,
-        button("+ new member").onClick { _ =>
-          // how to show this form ???
-          new CreateForm().apply(team)
-        }
-      ),
-      div(team.members.map(_.name).mkString(","))
-    ))).map(div(_))
+        div(
+          team.name,
+          button("+ new member").onClick(_ => showForm := true),
+          new CreateForm().apply(team, showForm).show(showForm)
+        ),
+        div(team.members.map(_.name).mkString(","))
+      )
+    }).map(div(_))
   )
 
   class CreateForm {
@@ -35,11 +36,11 @@ object Main extends PageApplication {
       }
     }
 
-    def apply(team: Team) = div(
+    def apply(team: Team, showTeam: Var[Boolean]) = div(
       div(text().placeholder("Member name").bind(memberName)),
       div(
-        button("close"),
-        button("OK").onClick(_ => createMember(team, memberName.get))
+        button("close").onClick(_ => showTeam := false),
+        button("OK").onClick { _ => createMember(team, memberName.get); showTeam := false }
       )
     ).css("popup")
 

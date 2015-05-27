@@ -5,15 +5,15 @@ import org.widok.html._
 
 object Main extends PageApplication {
 
-  val teams = new Var[Seq[Team]](Seq(
+  val teams = Buffer(
     Team("team 1", Seq(Member("member1"), Member("member2"), Member("member3"))),
     Team("team 2", Seq(Member("member1"), Member("member2"), Member("member3"))),
     Team("team 3", Seq(Member("member1"), Member("member2"), Member("member3")))
-  ))
+  )
 
   def view() = span(
     h1("All teams"),
-    teams.map(_.map { team =>
+    teams.map { team =>
       val showForm = Var(false)
       div(
         div(
@@ -23,17 +23,14 @@ object Main extends PageApplication {
         ),
         div(team.members.map(_.name).mkString(","))
       )
-    }).map(div(_))
+    }
   )
 
   class CreateForm {
     private val memberName = new Var[String]("")
 
     private def createMember(team: Team, newMemberName: String): Unit = {
-      teams := teams.get.map {
-        case t if t == team => t.copy(members = t.members :+ Member(newMemberName))
-        case other => other
-      }
+      teams.replace(team, team.copy(members = team.members :+ Member(newMemberName)))
     }
 
     def apply(team: Team, showTeam: Var[Boolean]) = div(
